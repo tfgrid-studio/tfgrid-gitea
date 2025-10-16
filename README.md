@@ -218,10 +218,13 @@ systemctl restart gitea
 
 ## License
 
-MIT License - See LICENSE file
+Apache 2.0 License - See LICENSE file
+
+**Copyright 2025 ThreeFold**
 
 ## Support
 
-- GitHub: https://github.com/tfgrid-studio/tfgrid-gitea
-- Docs: https://docs.tfgrid.studio/
-- Community: https://forum.threefold.io/
+- **TFGrid Docs:** https://docs.tfgrid.studio
+- **Gitea Docs:** https://docs.gitea.com
+- **GitHub Issues:** https://github.com/tfgrid-studio/tfgrid-gitea/issues
+- **Discussions:** https://github.com/orgs/tfgrid-studio/discussions
