@@ -1,0 +1,28 @@
+# TFGrid Compose state
+.tfgrid-compose/
+*.tfstate
+*.tfstate.backup
+
+# Environment files
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backups
+*.bak
+*.backup
+*.tar.gz
