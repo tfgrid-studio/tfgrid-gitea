@@ -1,0 +1,75 @@
+name: tfgrid-gitea
+version: 1.0.0
+description: Self-hosted Git service with web interface - perfect for AI agent repos
+
+# Pattern compatibility
+patterns:
+  recommended: single-vm
+  supported:
+    - single-vm
+    - gateway  # Can be proxied via gateway
+
+# Resource requirements
+resources:
+  cpu:
+    min: 2
+    recommended: 2
+  memory:
+    min: 2048
+    recommended: 4096
+  disk:
+    min: 25
+    recommended: 50
+  ports:
+    - 22:ssh
+    - 3000:gitea  # Gitea web interface
+
+# System dependencies
+dependencies:
+  system:
+    - git
+    - sqlite3
+    - curl
+    - wget
+  external:
+    - gitea: "latest"
+
+# Deployment hooks (called by deployer)
+hooks:
+  setup: deployment/setup.sh
+  configure: deployment/configure.sh
+  healthcheck: deployment/healthcheck.sh
+
+# Environment variables (optional)
+environment:
+  - name: GITEA_ADMIN_USER
+    default: gitadmin
+    description: "Gitea administrator username"
+    
+  - name: GITEA_ADMIN_PASSWORD
+    default: changeme123
+    secret: true
+    description: "Gitea administrator password"
+  
+  - name: GITEA_ADMIN_EMAIL
+    default: admin@localhost
+    description: "Gitea administrator email"
+    
+  - name: GITEA_DOMAIN
+    default: localhost
+    description: "Domain for Gitea (use gateway domain if proxied)"
+    
+  - name: GITEA_PORT
+    default: "3000"
+    description: "Gitea HTTP port"
+
+# Logging configuration
+logging:
+  method: systemd
+  service: gitea
+  location: /var/lib/gitea/log/
+
+# Status check
+status:
+  method: systemd
+  service: gitea
