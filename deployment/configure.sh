@@ -6,11 +6,8 @@ set -e
 
 echo "⚙️  Configuring tfgrid-gitea..."
 
-# Install systemd service
-echo "🔧 Installing systemd service..."
-cp /tmp/app-source/src/systemd/gitea.service /etc/systemd/system/
-systemctl daemon-reload
-systemctl enable gitea
+# Systemd service was already installed by setup.sh
+echo "🔧 Systemd service already installed"
 
 # Create Gitea configuration
 echo "⚙️  Creating Gitea configuration..."

@@ -38,6 +38,13 @@ mkdir -p /opt/gitea/scripts
 cp -r /tmp/app-source/src/scripts/* /opt/gitea/scripts/ 2>/dev/null || echo "ℹ️  No scripts to copy yet"
 chmod +x /opt/gitea/scripts/*.sh 2>/dev/null || true
 
+# Install systemd service
+echo "🔧 Installing systemd service..."
+cp /tmp/app-source/src/systemd/gitea.service /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable gitea
+
 echo "✅ Setup complete"
 echo "👤 Gitea user ready: /home/gitea"
 echo "🔧 Gitea binary: /usr/local/bin/gitea"
+echo "🔧 Systemd service: gitea.service"
