@@ -70,9 +70,55 @@ commands:
   init:
     script: /opt/gitea/scripts/init-admin.sh
     description: Initialize admin user
+  launch:
+    script: /opt/gitea/scripts/launch.sh
+    description: Open Gitea web interface in browser
+
+  # Repository management
+  create-repo:
+    script: /opt/gitea/scripts/create-repo.sh
+    description: Create a new repository
+    args: "<repo-name> [--private] [--description='desc']"
+    interactive: true
+  list-repos:
+    script: /opt/gitea/scripts/list-repos.sh
+    description: List all repositories
+  delete-repo:
+    script: /opt/gitea/scripts/delete-repo.sh
+    description: Delete a repository
+    args: "<repo-name> [--confirm]"
+    interactive: true
+
+  # User management
+  create-user:
+    script: /opt/gitea/scripts/create-user.sh
+    description: Create a new user
+    args: "<username> <email> [--admin]"
+    interactive: true
+  list-users:
+    script: /opt/gitea/scripts/list-users.sh
+    description: List all users
+  reset-password:
+    script: /opt/gitea/scripts/reset-password.sh
+    description: Reset user password
+    args: "<username>"
+    interactive: true
+
+  # Git operations
+  clone-repo:
+    script: /opt/gitea/scripts/clone-repo.sh
+    description: Clone a repository locally
+    args: "<repo-name> [local-path]"
+  push-code:
+    script: /opt/gitea/scripts/push-code.sh
+    description: Push code to a repository
+    args: "<repo-name> <local-path> [--force]"
+
+  # Administrative
   backup:
     script: /opt/gitea/scripts/backup.sh
     description: Create backup
+    args: "[backup-name]"
   restore:
     script: /opt/gitea/scripts/restore.sh
     description: Restore from backup
