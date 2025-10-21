@@ -11,12 +11,21 @@ echo "🔧 Systemd service already installed"
 
 # Create Gitea configuration
 echo "⚙️  Creating Gitea configuration..."
+
+# Determine ROOT_URL based on available IPs
+ROOT_URL="http://localhost:3000/"
+if [ -n "${TFGRID_WIREGUARD_IP:-}" ]; then
+    ROOT_URL="http://${TFGRID_WIREGUARD_IP}:3000/"
+elif [ -n "${TFGRID_MYCELIUM_IP:-}" ]; then
+    ROOT_URL="http://[${TFGRID_MYCELIUM_IP}]:3000/"
+fi
+
 cat > /etc/gitea/app.ini << EOF
 WORK_PATH = /var/lib/gitea
 
 [server]
 HTTP_PORT = 3000
-ROOT_URL = http://localhost:3000/
+ROOT_URL = ${ROOT_URL}
 
 [database]
 DB_TYPE = sqlite3
