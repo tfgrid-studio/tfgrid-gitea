@@ -11,24 +11,26 @@ echo "🌐 Gitea is running on this VM at: http://localhost:3000"
 echo ""
 
 # Try to get the actual IP addresses for better UX
-# Since this runs on the VM, we need to get IPs from the deployment context
-WIREGUARD_IP=""
-MYCELIUM_IP=""
+# Check environment variables that tfgrid-compose might pass
+WIREGUARD_IP="${TFGRID_WIREGUARD_IP:-}"
+MYCELIUM_IP="${TFGRID_MYCELIUM_IP:-}"
 
-# Check if tfgrid-compose is available and try to get addresses
-if command -v tfgrid-compose >/dev/null 2>&1; then
-    # Try with app name first (more reliable), then without
-    ADDRESS_OUTPUT=$(tfgrid-compose address tfgrid-gitea 2>/dev/null || tfgrid-compose address 2>/dev/null || echo "")
-    if [ -n "$ADDRESS_OUTPUT" ]; then
-        WIREGUARD_IP=$(echo "$ADDRESS_OUTPUT" | grep "Wireguard IP:" | sed 's/Wireguard IP: //' | xargs)
-        MYCELIUM_IP=$(echo "$ADDRESS_OUTPUT" | grep "Mycelium IP:" | sed 's/Mycelium IP: //' | xargs)
+# If not set, try to get from tfgrid-compose address command
+if [ -z "$WIREGUARD_IP" ] && [ -z "$MYCELIUM_IP" ]; then
+    if command -v tfgrid-compose >/dev/null 2>&1; then
+        # Try with app name first (more reliable), then without
+        ADDRESS_OUTPUT=$(tfgrid-compose address tfgrid-gitea 2>/dev/null || tfgrid-compose address 2>/dev/null || echo "")
+        if [ -n "$ADDRESS_OUTPUT" ]; then
+            WIREGUARD_IP=$(echo "$ADDRESS_OUTPUT" | grep "Wireguard IP:" | sed 's/Wireguard IP: //' | xargs)
+            MYCELIUM_IP=$(echo "$ADDRESS_OUTPUT" | grep "Mycelium IP:" | sed 's/Mycelium IP: //' | xargs)
 
-        # If not found with that pattern, try alternative patterns
-        if [ -z "$WIREGUARD_IP" ]; then
-            WIREGUARD_IP=$(echo "$ADDRESS_OUTPUT" | grep "WireGuard:" | sed 's/WireGuard: //' | xargs)
-        fi
-        if [ -z "$MYCELIUM_IP" ]; then
-            MYCELIUM_IP=$(echo "$ADDRESS_OUTPUT" | grep "Mycelium:" | sed 's/Mycelium: //' | xargs)
+            # If not found with that pattern, try alternative patterns
+            if [ -z "$WIREGUARD_IP" ]; then
+                WIREGUARD_IP=$(echo "$ADDRESS_OUTPUT" | grep "WireGuard:" | sed 's/WireGuard: //' | xargs)
+            fi
+            if [ -z "$MYCELIUM_IP" ]; then
+                MYCELIUM_IP=$(echo "$ADDRESS_OUTPUT" | grep "Mycelium:" | sed 's/Mycelium: //' | xargs)
+            fi
         fi
     fi
 fi
@@ -41,7 +43,15 @@ if [ -z "$WIREGUARD_IP" ]; then
     fi
 fi
 
-echo "📋 Access URLs:"
+# Debug: Show what we found
+if [ -n "$WIREGUARD_IP" ] || [ -n "$MYCELIUM_IP" ]; then
+    echo "🔍 Detected IP addresses:"
+    [ -n "$WIREGUARD_IP" ] && echo "   WireGuard: $WIREGUARD_IP"
+    [ -n "$MYCELIUM_IP" ] && echo "   Mycelium: $MYCELIUM_IP"
+    echo ""
+fi
+
+echo "� Access URLs:"
 if [ -n "$WIREGUARD_IP" ]; then
     echo "   🔗 WireGuard:  http://$WIREGUARD_IP:3000"
 fi
