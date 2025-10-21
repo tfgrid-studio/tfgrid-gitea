@@ -40,7 +40,7 @@ chmod +x /opt/gitea/scripts/*.sh 2>/dev/null || true
 
 # Install systemd service
 echo "🔧 Installing systemd service..."
-cp /tmp/app-source/src/systemd/gitea.service /etc/systemd/system/
+cp /tmp/app-source/systemd/gitea.service /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable gitea
 
