@@ -23,11 +23,11 @@ else
         ADDRESS_OUTPUT=$(tfgrid-compose address tfgrid-gitea 2>/dev/null || echo "")
         if [ -n "$ADDRESS_OUTPUT" ]; then
             # Parse the output to extract IP
-            # tfgrid-compose address typically outputs something like:
-            # WireGuard: 100.64.x.x
-            # Mycelium: xxx.xxx.xxx.xxx
-            WIREGUARD_IP=$(echo "$ADDRESS_OUTPUT" | grep "WireGuard:" | sed 's/WireGuard: //' | xargs)
-            MYCELIUM_IP=$(echo "$ADDRESS_OUTPUT" | grep "Mycelium:" | sed 's/Mycelium: //' | xargs)
+            # tfgrid-compose address outputs:
+            # Wireguard IP: 10.1.3.2
+            # Mycelium IP:  xxx.xxx.xxx.xxx
+            WIREGUARD_IP=$(echo "$ADDRESS_OUTPUT" | grep "Wireguard IP:" | sed 's/Wireguard IP: //' | xargs)
+            MYCELIUM_IP=$(echo "$ADDRESS_OUTPUT" | grep "Mycelium IP:" | sed 's/Mycelium IP: //' | xargs)
 
             # Prefer WireGuard, fallback to Mycelium
             if [ -n "$WIREGUARD_IP" ]; then
