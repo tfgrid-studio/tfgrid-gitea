@@ -15,32 +15,32 @@ echo ""
 WIREGUARD_IP="${TFGRID_WIREGUARD_IP:-}"
 MYCELIUM_IP="${TFGRID_MYCELIUM_IP:-}"
 
-# If not set, try to get from tfgrid-compose address command
-if [ -z "$WIREGUARD_IP" ] && [ -z "$MYCELIUM_IP" ]; then
-    if command -v tfgrid-compose >/dev/null 2>&1; then
-        # Try with app name first (more reliable), then without
-        ADDRESS_OUTPUT=$(tfgrid-compose address tfgrid-gitea 2>/dev/null || tfgrid-compose address 2>/dev/null || echo "")
-        if [ -n "$ADDRESS_OUTPUT" ]; then
-            WIREGUARD_IP=$(echo "$ADDRESS_OUTPUT" | grep "Wireguard IP:" | sed 's/Wireguard IP: //' | xargs)
-            MYCELIUM_IP=$(echo "$ADDRESS_OUTPUT" | grep "Mycelium IP:" | sed 's/Mycelium IP: //' | xargs)
-
-            # If not found with that pattern, try alternative patterns
-            if [ -z "$WIREGUARD_IP" ]; then
-                WIREGUARD_IP=$(echo "$ADDRESS_OUTPUT" | grep "WireGuard:" | sed 's/WireGuard: //' | xargs)
-            fi
-            if [ -z "$MYCELIUM_IP" ]; then
-                MYCELIUM_IP=$(echo "$ADDRESS_OUTPUT" | grep "Mycelium:" | sed 's/Mycelium: //' | xargs)
-            fi
-        fi
-    fi
-fi
-
-# If still not found, try to get from system (WireGuard interface)
+# If not set, try to get from system network interfaces
 if [ -z "$WIREGUARD_IP" ]; then
-    # Check if wg1 interface exists and get its IP
+    # Check if wg1 interface exists and get its IP (WireGuard)
     if ip link show wg1 >/dev/null 2>&1; then
         WIREGUARD_IP=$(ip -4 addr show wg1 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
     fi
+fi
+
+if [ -z "$MYCELIUM_IP" ]; then
+    # Check if mycelium interface exists and get its IPv6 address
+    if ip link show mycelium >/dev/null 2>&1; then
+        MYCELIUM_IP=$(ip -6 addr show mycelium | grep -oP '(?<=inet6\s)[0-9a-f:]+(?=/)' | head -1)
+    fi
+fi
+
+# Additional fallback: check for any IPv4 addresses on common interfaces
+if [ -z "$WIREGUARD_IP" ]; then
+    # Look for IPv4 addresses on eth0, ens3, or other common interfaces
+    for iface in eth0 ens3 enp0s3; do
+        if ip link show "$iface" >/dev/null 2>&1; then
+            WIREGUARD_IP=$(ip -4 addr show "$iface" | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
+            if [ -n "$WIREGUARD_IP" ]; then
+                break
+            fi
+        fi
+    done
 fi
 
 # Debug: Show what we found
