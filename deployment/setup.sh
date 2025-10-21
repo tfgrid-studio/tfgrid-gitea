@@ -35,8 +35,13 @@ chown -R gitea:gitea /etc/gitea /var/lib/gitea /var/log/gitea
 # Create gitea scripts directory
 echo "📁 Creating scripts directory..."
 mkdir -p /opt/gitea/scripts
-cp -r /tmp/app-source/src/scripts/* /opt/gitea/scripts/ 2>/dev/null || echo "ℹ️  No scripts to copy yet"
-chmod +x /opt/gitea/scripts/*.sh 2>/dev/null || true
+
+# Copy agent scripts (tfgrid-compose flattens src/ directory)
+echo "📋 Copying agent scripts..."
+cp -r /tmp/app-source/scripts /opt/gitea/
+
+# Make scripts executable
+chmod +x /opt/gitea/scripts/*.sh
 
 # Install systemd service
 echo "🔧 Installing systemd service..."
