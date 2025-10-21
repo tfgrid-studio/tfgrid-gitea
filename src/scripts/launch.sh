@@ -1,74 +1,28 @@
 #!/bin/bash
 # Launch Gitea web interface in browser
 
-set -e
+echo "🚀 Gitea Web Interface Access"
+echo ""
 
-echo "🚀 Launching Gitea web interface..."
+# Since this runs on the VM, we can't open the user's local browser
+# Instead, provide clear instructions on how to access Gitea
 
-# Get the VM's accessible IP
-# Try WireGuard first, then Mycelium
-VM_IP=""
-
-# Check if we're running on the VM itself
-if [ -f /etc/gitea/app.ini ]; then
-    # Running on VM - use localhost
-    VM_IP="localhost"
-else
-    # Running locally - need to get VM IP from tfgrid-compose
-    echo "Detecting VM IP..."
-
-    # Try to get IP from tfgrid-compose address command
-    # This assumes we're in the correct directory or have context
-    if command -v tfgrid-compose >/dev/null 2>&1; then
-        ADDRESS_OUTPUT=$(tfgrid-compose address tfgrid-gitea 2>/dev/null || echo "")
-        if [ -n "$ADDRESS_OUTPUT" ]; then
-            # Parse the output to extract IP
-            # tfgrid-compose address outputs:
-            # Wireguard IP: 10.1.3.2
-            # Mycelium IP:  xxx.xxx.xxx.xxx
-            WIREGUARD_IP=$(echo "$ADDRESS_OUTPUT" | grep "Wireguard IP:" | sed 's/Wireguard IP: //' | xargs)
-            MYCELIUM_IP=$(echo "$ADDRESS_OUTPUT" | grep "Mycelium IP:" | sed 's/Mycelium IP: //' | xargs)
-
-            # Prefer WireGuard, fallback to Mycelium
-            if [ -n "$WIREGUARD_IP" ]; then
-                VM_IP="$WIREGUARD_IP"
-            elif [ -n "$MYCELIUM_IP" ]; then
-                VM_IP="$MYCELIUM_IP"
-            fi
-        fi
-    fi
-
-    # If we couldn't get IP from tfgrid-compose, try environment or prompt
-    if [ -z "$VM_IP" ]; then
-        echo "Could not automatically detect VM IP."
-        echo "Please provide the VM IP (WireGuard or Mycelium):"
-        read -r VM_IP
-    fi
-fi
-
-if [ -z "$VM_IP" ]; then
-    echo "❌ Could not determine VM IP"
-    exit 1
-fi
-
-# Construct URL
-GITEA_URL="http://$VM_IP:3000"
-
-echo "🌐 Opening Gitea at: $GITEA_URL"
-
-# Open in browser (cross-platform)
-if command -v xdg-open >/dev/null 2>&1; then
-    # Linux
-    xdg-open "$GITEA_URL" 2>/dev/null &
-elif command -v open >/dev/null 2>&1; then
-    # macOS
-    open "$GITEA_URL" 2>/dev/null &
-elif command -v start >/dev/null 2>&1; then
-    # Windows (in WSL)
-    start "$GITEA_URL" 2>/dev/null &
-else
-    echo "⚠️  Could not open browser automatically."
-    echo "Please manually open: $GITEA_URL"
-fi
-
-echo "✅ Browser launch initiated"
+echo "🌐 Gitea is running on this VM at: http://localhost:3000"
+echo ""
+echo "📋 To access Gitea from your local machine:"
+echo ""
+echo "1. Get the VM's external IP:"
+echo "   tfgrid-compose address tfgrid-gitea"
+echo ""
+echo "2. Open your browser and go to:"
+echo "   http://<VM_IP>:3000"
+echo ""
+echo "   Where <VM_IP> is the WireGuard IP or Mycelium IP from step 1"
+echo ""
+echo "🔑 Default login credentials:"
+echo "   Username: gitadmin"
+echo "   Password: changeme123"
+echo ""
+echo "⚠️  Remember to change the default password after first login!"
+echo ""
+echo "✅ Gitea is ready to use"
