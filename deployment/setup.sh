@@ -22,8 +22,8 @@ fi
 
 # Download and install Gitea
 echo "📦 Installing Gitea..."
-GITEA_VERSION="1.21.0"
-curl -fsSL "https://dl.gitea.com/gitea/${GITEA_VERSION}/gitea-${GITEA_VERSION}-linux-amd64.xz" | xz -d | tar -x
+GITEA_VERSION="1.24.6"
+curl -fsSL "https://github.com/go-gitea/gitea/releases/download/v${GITEA_VERSION}/gitea-${GITEA_VERSION}-linux-amd64.xz" | xz -d | tar -x
 mv gitea /usr/local/bin/
 chmod +x /usr/local/bin/gitea
 
