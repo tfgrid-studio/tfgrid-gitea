@@ -47,9 +47,31 @@ EOF
 # Set proper ownership
 chown gitea:gitea /etc/gitea/app.ini
 
-# Start service
-echo "🚀 Starting Gitea service..."
+# Start service temporarily to initialize database
+echo "🚀 Starting Gitea service to initialize..."
 systemctl start gitea
 
+# Wait for Gitea to initialize
+echo "⏳ Waiting for Gitea to initialize database..."
+sleep 5
+
+# Create admin user
+echo "👤 Creating admin user..."
+GITEA_ADMIN_USER="${GITEA_ADMIN_USER:-gitadmin}"
+GITEA_ADMIN_PASSWORD="${GITEA_ADMIN_PASSWORD:-changeme123}"
+GITEA_ADMIN_EMAIL="${GITEA_ADMIN_EMAIL:-admin@localhost}"
+
+# Create admin using Gitea CLI
+sudo -u gitea /usr/local/bin/gitea admin user create \
+    --username "$GITEA_ADMIN_USER" \
+    --password "$GITEA_ADMIN_PASSWORD" \
+    --email "$GITEA_ADMIN_EMAIL" \
+    --admin \
+    --config /etc/gitea/app.ini \
+    || echo "⚠️  Admin user may already exist"
+
 echo "✅ Configuration complete"
-echo "🌐 Gitea should be accessible at: http://localhost:3000"
+echo "🌐 Gitea accessible at: ${ROOT_URL}"
+echo "👤 Admin user: $GITEA_ADMIN_USER"
+echo "🔑 Admin password: $GITEA_ADMIN_PASSWORD"
+echo "⚠️  Change the password after first login!"
