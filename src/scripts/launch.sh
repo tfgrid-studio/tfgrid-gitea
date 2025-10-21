@@ -9,16 +9,35 @@ echo ""
 
 echo "🌐 Gitea is running on this VM at: http://localhost:3000"
 echo ""
-echo "📋 To access Gitea from your local machine:"
+
+# Try to get the actual IP addresses for better UX
+WIREGUARD_IP=""
+MYCELIUM_IP=""
+
+if command -v tfgrid-compose >/dev/null 2>&1; then
+    ADDRESS_OUTPUT=$(tfgrid-compose address tfgrid-gitea 2>/dev/null || echo "")
+    if [ -n "$ADDRESS_OUTPUT" ]; then
+        WIREGUARD_IP=$(echo "$ADDRESS_OUTPUT" | grep "Wireguard IP:" | sed 's/Wireguard IP: //' | xargs)
+        MYCELIUM_IP=$(echo "$ADDRESS_OUTPUT" | grep "Mycelium IP:" | sed 's/Mycelium IP: //' | xargs)
+    fi
+fi
+
+echo "📋 Access URLs:"
+if [ -n "$WIREGUARD_IP" ]; then
+    echo "   🔗 WireGuard:  http://$WIREGUARD_IP:3000"
+fi
+if [ -n "$MYCELIUM_IP" ]; then
+    echo "   🔗 Mycelium:   http://[$MYCELIUM_IP]:3000"
+fi
 echo ""
-echo "1. Get the VM's external IP:"
-echo "   tfgrid-compose address tfgrid-gitea"
-echo ""
-echo "2. Open your browser and go to:"
-echo "   http://<VM_IP>:3000"
-echo ""
-echo "   Where <VM_IP> is the WireGuard IP or Mycelium IP from step 1"
-echo ""
+
+if [ -z "$WIREGUARD_IP" ] && [ -z "$MYCELIUM_IP" ]; then
+    echo "📋 To find the access URLs:"
+    echo "   Run: tfgrid-compose address tfgrid-gitea"
+    echo "   Then visit: http://<IP>:3000"
+    echo ""
+fi
+
 echo "🔑 Default login credentials:"
 echo "   Username: gitadmin"
 echo "   Password: changeme123"
