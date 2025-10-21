@@ -11,10 +11,12 @@ echo "🌐 Gitea is running on this VM at: http://localhost:3000"
 echo ""
 
 # Try to get the actual IP addresses for better UX
-WIREGUARD_IP=""
-MYCELIUM_IP=""
+# First check environment variables that tfgrid-compose might pass
+WIREGUARD_IP="${TFGRID_WIREGUARD_IP:-}"
+MYCELIUM_IP="${TFGRID_MYCELIUM_IP:-}"
 
-if command -v tfgrid-compose >/dev/null 2>&1; then
+# If not set, try to get from tfgrid-compose address command
+if [ -z "$WIREGUARD_IP" ] && [ -z "$MYCELIUM_IP" ] && command -v tfgrid-compose >/dev/null 2>&1; then
     ADDRESS_OUTPUT=$(tfgrid-compose address tfgrid-gitea 2>/dev/null || echo "")
     if [ -n "$ADDRESS_OUTPUT" ]; then
         WIREGUARD_IP=$(echo "$ADDRESS_OUTPUT" | grep "Wireguard IP:" | sed 's/Wireguard IP: //' | xargs)
