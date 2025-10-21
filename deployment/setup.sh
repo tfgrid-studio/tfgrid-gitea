@@ -6,47 +6,38 @@ set -e
 
 echo "🚀 Setting up tfgrid-gitea..."
 
-# Update system
-echo "📦 Updating system..."
+# Install system dependencies
+echo "📦 Installing system dependencies..."
 apt-get update
-
-# Install dependencies
-echo "📦 Installing dependencies..."
-apt-get install -y git sqlite3 curl wget
+apt-get install -y git curl wget sqlite3
 
 # Create gitea user
 echo "👤 Creating gitea user..."
-if ! id -u git >/dev/null 2>&1; then
-    useradd -m -s /bin/bash git
-    echo "✅ Created git user"
+if ! id -u gitea >/dev/null 2>&1; then
+    useradd -m -s /bin/bash gitea
+    echo "✅ Created gitea user"
 else
-    echo "ℹ️  Git user already exists"
+    echo "ℹ️  Gitea user already exists"
 fi
+
+# Download and install Gitea
+echo "📦 Installing Gitea..."
+GITEA_VERSION="1.21.0"
+curl -fsSL "https://dl.gitea.com/gitea/${GITEA_VERSION}/gitea-${GITEA_VERSION}-linux-amd64.tar.gz" | tar -xz
+mv gitea /usr/local/bin/
+chmod +x /usr/local/bin/gitea
 
 # Create directories
 echo "📁 Creating directories..."
-mkdir -p /var/lib/gitea/{custom,data,log}
-mkdir -p /etc/gitea
-chown -R git:git /var/lib/gitea
-chown -R git:git /etc/gitea
-chmod 750 /var/lib/gitea
-chmod 750 /etc/gitea
+mkdir -p /etc/gitea /var/lib/gitea/data /var/log/gitea
+chown -R gitea:gitea /etc/gitea /var/lib/gitea /var/log/gitea
 
-# Download Gitea binary
-echo "📥 Downloading Gitea..."
-GITEA_VERSION="1.21.0"
-wget -O /usr/local/bin/gitea https://dl.gitea.com/gitea/${GITEA_VERSION}/gitea-${GITEA_VERSION}-linux-amd64
-chmod +x /usr/local/bin/gitea
-
-# Verify installation
-echo "🔍 Verifying Gitea installation..."
-if command -v gitea &> /dev/null; then
-    echo "✅ Gitea installed: $(gitea --version | head -1)"
-else
-    echo "❌ Gitea installation failed"
-    exit 1
-fi
+# Create gitea scripts directory
+echo "📁 Creating scripts directory..."
+mkdir -p /opt/gitea/scripts
+cp -r /tmp/app-source/src/scripts/* /opt/gitea/scripts/ 2>/dev/null || echo "ℹ️  No scripts to copy yet"
+chmod +x /opt/gitea/scripts/*.sh 2>/dev/null || true
 
 echo "✅ Setup complete"
-echo "👤 Git user ready"
-echo "📁 Data directory: /var/lib/gitea"
+echo "👤 Gitea user ready: /home/gitea"
+echo "🔧 Gitea binary: /usr/local/bin/gitea"

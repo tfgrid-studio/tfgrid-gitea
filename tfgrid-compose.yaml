@@ -1,13 +1,13 @@
 name: tfgrid-gitea
-version: 1.0.0
-description: Self-hosted Git service with web interface - perfect for AI agent repos
+version: 0.1.0
+description: Self-hosted Git service with web interface
 
 # Pattern compatibility
 patterns:
   recommended: single-vm
   supported:
     - single-vm
-    - gateway  # Can be proxied via gateway
+    # Future: - gateway
 
 # Resource requirements
 resources:
@@ -22,17 +22,16 @@ resources:
     recommended: 50
   ports:
     - 22:ssh
-    - 3000:gitea  # Gitea web interface
+    - 3000:http  # Gitea web interface
 
 # System dependencies
 dependencies:
   system:
     - git
-    - sqlite3
     - curl
-    - wget
+    - sqlite3  # For database
   external:
-    - gitea: "latest"
+    - gitea: ">=1.21.0"
 
 # Deployment hooks (called by deployer)
 hooks:
@@ -44,32 +43,40 @@ hooks:
 environment:
   - name: GITEA_ADMIN_USER
     default: gitadmin
-    description: "Gitea administrator username"
-    
+    description: "Admin username"
   - name: GITEA_ADMIN_PASSWORD
     default: changeme123
     secret: true
-    description: "Gitea administrator password"
-  
+    description: "Admin password (change immediately)"
   - name: GITEA_ADMIN_EMAIL
     default: admin@localhost
-    description: "Gitea administrator email"
-    
+    description: "Admin email"
   - name: GITEA_DOMAIN
-    default: localhost
-    description: "Domain for Gitea (use gateway domain if proxied)"
-    
-  - name: GITEA_PORT
-    default: "3000"
-    description: "Gitea HTTP port"
+    description: "Domain for gateway deployment"
 
 # Logging configuration
 logging:
   method: systemd
   service: gitea
-  location: /var/lib/gitea/log/
+  location: /var/log/gitea
 
 # Status check
 status:
   method: systemd
   service: gitea
+
+# App-specific commands (v0.11.0+)
+commands:
+  init:
+    script: /opt/gitea/scripts/init-admin.sh
+    description: Initialize admin user
+  backup:
+    script: /opt/gitea/scripts/backup.sh
+    description: Create backup
+  restore:
+    script: /opt/gitea/scripts/restore.sh
+    description: Restore from backup
+    args: "<backup-file>"
+  status:
+    script: /opt/gitea/scripts/status.sh
+    description: Service status
