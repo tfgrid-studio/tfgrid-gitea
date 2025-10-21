@@ -11,16 +11,33 @@ echo "🌐 Gitea is running on this VM at: http://localhost:3000"
 echo ""
 
 # Try to get the actual IP addresses for better UX
-# First check environment variables that tfgrid-compose might pass
-WIREGUARD_IP="${TFGRID_WIREGUARD_IP:-}"
-MYCELIUM_IP="${TFGRID_MYCELIUM_IP:-}"
+# Since this runs on the VM, we need to get IPs from the deployment context
+WIREGUARD_IP=""
+MYCELIUM_IP=""
 
-# If not set, try to get from tfgrid-compose address command
-if [ -z "$WIREGUARD_IP" ] && [ -z "$MYCELIUM_IP" ] && command -v tfgrid-compose >/dev/null 2>&1; then
-    ADDRESS_OUTPUT=$(tfgrid-compose address tfgrid-gitea 2>/dev/null || echo "")
+# Check if tfgrid-compose is available and try to get addresses
+if command -v tfgrid-compose >/dev/null 2>&1; then
+    # Try with app name first (more reliable), then without
+    ADDRESS_OUTPUT=$(tfgrid-compose address tfgrid-gitea 2>/dev/null || tfgrid-compose address 2>/dev/null || echo "")
     if [ -n "$ADDRESS_OUTPUT" ]; then
         WIREGUARD_IP=$(echo "$ADDRESS_OUTPUT" | grep "Wireguard IP:" | sed 's/Wireguard IP: //' | xargs)
         MYCELIUM_IP=$(echo "$ADDRESS_OUTPUT" | grep "Mycelium IP:" | sed 's/Mycelium IP: //' | xargs)
+
+        # If not found with that pattern, try alternative patterns
+        if [ -z "$WIREGUARD_IP" ]; then
+            WIREGUARD_IP=$(echo "$ADDRESS_OUTPUT" | grep "WireGuard:" | sed 's/WireGuard: //' | xargs)
+        fi
+        if [ -z "$MYCELIUM_IP" ]; then
+            MYCELIUM_IP=$(echo "$ADDRESS_OUTPUT" | grep "Mycelium:" | sed 's/Mycelium: //' | xargs)
+        fi
+    fi
+fi
+
+# If still not found, try to get from system (WireGuard interface)
+if [ -z "$WIREGUARD_IP" ]; then
+    # Check if wg1 interface exists and get its IP
+    if ip link show wg1 >/dev/null 2>&1; then
+        WIREGUARD_IP=$(ip -4 addr show wg1 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
     fi
 fi
 
