@@ -10,6 +10,11 @@ echo ""
 echo "🌐 Gitea is running on this VM at: http://localhost:3000"
 echo ""
 
+# Source TFGrid environment variables if available
+if [ -f /etc/profile.d/tfgrid-env.sh ]; then
+    source /etc/profile.d/tfgrid-env.sh
+fi
+
 # Try to get the actual IP addresses for better UX
 # Priority 1: Environment variables set by tfgrid-compose during deployment
 WIREGUARD_IP="${TFGRID_WIREGUARD_IP:-}"
