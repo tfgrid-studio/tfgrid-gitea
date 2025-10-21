@@ -12,6 +12,8 @@ echo "🔧 Systemd service already installed"
 # Create Gitea configuration
 echo "⚙️  Creating Gitea configuration..."
 cat > /etc/gitea/app.ini << EOF
+WORK_PATH = /var/lib/gitea
+
 [server]
 HTTP_PORT = 3000
 ROOT_URL = http://localhost:3000/
@@ -28,6 +30,9 @@ INTERNAL_TOKEN = $(openssl rand -hex 32)
 [service]
 DISABLE_REGISTRATION = false
 REQUIRE_SIGNIN_VIEW = false
+
+[oauth2]
+JWT_SECRET = $(openssl rand -hex 32)
 EOF
 
 # Set proper ownership

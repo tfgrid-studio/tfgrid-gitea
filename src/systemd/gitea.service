@@ -7,6 +7,7 @@ User=gitea
 Group=gitea
 WorkingDirectory=/var/lib/gitea
 ExecStart=/usr/local/bin/gitea web --config /etc/gitea/app.ini
+Environment="HOME=/var/lib/gitea"
 Restart=always
 RestartSec=10
 
