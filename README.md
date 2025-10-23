@@ -101,14 +101,26 @@ tfgrid-gitea/
 - 4 GB RAM
 - 50 GB disk
 
-## Using with AI Agent
+## Integration with tfgrid-ai-stack
 
-Perfect companion for tfgrid-ai-agent:
+**tfgrid-ai-stack** provides seamless integration with automatic Git repository creation:
 
 ```bash
-# On AI agent VM
-cd /home/developer/code
+# Deploy complete AI + Git environment
+tfgrid-compose up tfgrid-ai-stack
 
+# Create project (automatically creates Gitea repo)
+tfgrid-compose create "my-website"
+
+# View in web interface
+# Access: http://your-ip/git/tfgrid-ai-agent/my-website/
+```
+
+### Standalone Usage
+
+For manual integration with tfgrid-ai-agent:
+
+```bash
 # Configure git to use your Gitea
 git config --global user.name "AI Agent"
 git config --global user.email "ai@example.com"
@@ -116,7 +128,7 @@ git config --global user.email "ai@example.com"
 # Create project and push to Gitea
 ai-agent create "my-website"
 cd my-website
-git remote add origin http://example.com/gitea/username/my-website.git
+git remote add origin http://your-gitea-ip/username/my-website.git
 git push -u origin main
 ```
 
