@@ -1,6 +1,6 @@
 # TFGrid Gitea
 
-Self-hosted Git service with web interface - perfect for AI agent repositories and collaborative development on ThreeFold Grid.
+Self-hosted Git service with web interface, perfect for AI agent repositories and collaborative development on ThreeFold Grid.
 
 ## Overview
 
