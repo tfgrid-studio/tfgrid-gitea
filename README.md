@@ -236,7 +236,8 @@ Apache 2.0 License - See LICENSE file
 
 ## Support
 
-- **TFGrid Docs:** https://docs.tfgrid.studio
-- **Gitea Docs:** https://docs.gitea.com
-- **GitHub Issues:** https://github.com/tfgrid-studio/tfgrid-gitea/issues
-- **Discussions:** https://github.com/orgs/tfgrid-studio/discussions
+- **📚 Documentation:** [docs.tfgrid.studio](https://docs.tfgrid.studio)
+- **🐛 Issues:** [GitHub Issues](https://github.com/tfgrid-studio/tfgrid-gitea/issues)
+- **💬 Discussions:** [GitHub Discussions](https://github.com/orgs/tfgrid-studio/discussions)
+- **📧 Contact:** [tfgrid.studio/contact](https://tfgrid.studio/contact)
+- **📖 Gitea Docs:** [docs.gitea.com](https://docs.gitea.com)
