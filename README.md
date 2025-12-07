@@ -1,5 +1,9 @@
 # TFGrid Gitea
 
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/tfgrid-studio/tfgrid-gitea)](https://github.com/tfgrid-studio/tfgrid-gitea/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/tfgrid-studio/tfgrid-gitea)](https://github.com/tfgrid-studio/tfgrid-gitea/issues)
+
 Self-hosted Git service with web interface - perfect for AI agent repositories and collaborative development on ThreeFold Grid.
 
 ## Overview
